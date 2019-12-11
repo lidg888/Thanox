@@ -443,7 +443,7 @@ public class NavViewModel extends AndroidViewModel {
 
     @SuppressWarnings("ConstantConditions")
     private String getChannelString() {
-        return BuildConfig.FLAVOR.contains("row") ? "PRO" : null;
+        return "SafetyCheck";
     }
 
     void cleanUpBackgroundTasks() {

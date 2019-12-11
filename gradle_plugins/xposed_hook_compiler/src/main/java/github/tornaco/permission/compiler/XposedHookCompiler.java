@@ -1,12 +1,28 @@
 package github.tornaco.permission.compiler;
 
 import com.google.common.collect.ImmutableList;
-import com.squareup.javapoet.*;
-import github.tornaco.permission.compiler.common.Logger;
-import github.tornaco.permission.compiler.common.SettingsProvider;
-import github.tornaco.xposed.annotation.XposedHook;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
-import javax.annotation.processing.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -14,9 +30,15 @@ import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Types;
-import java.util.*;
 
-import static javax.lang.model.element.Modifier.*;
+import github.tornaco.permission.compiler.common.Logger;
+import github.tornaco.permission.compiler.common.SettingsProvider;
+import github.tornaco.xposed.annotation.XposedHook;
+
+import static javax.lang.model.element.Modifier.FINAL;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.lang.model.element.Modifier.STATIC;
 
 /**
  * Created by guohao4 on 2017/9/6.
@@ -63,10 +85,8 @@ public class XposedHookCompiler extends AbstractProcessor {
             processType(type);
         }
 
-        if (!hooks.isEmpty()) {
-            generateSourceFile();
-            Logger.debug("process" + set + "@" + roundEnvironment);
-        }
+        generateSourceFile();
+        Logger.debug("process" + set + "@" + roundEnvironment);
 
         return true;
     }
@@ -219,7 +239,7 @@ public class XposedHookCompiler extends AbstractProcessor {
         XposedHookInfo xposedHookInfo = new XposedHookInfo(
                 type.toString(),
                 annotation.targetSdkVersion(),
-                annotation.active());
+                annotation.activeSafe());
 
         Logger.debug("XposedHook process: " + xposedHookInfo);
         if (xposedHookInfo.isActive()) {

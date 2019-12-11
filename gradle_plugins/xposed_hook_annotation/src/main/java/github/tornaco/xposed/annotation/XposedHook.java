@@ -9,6 +9,7 @@ public @interface XposedHook {
     int[] targetSdkVersion();
 
     boolean active() default true;
+    boolean activeSafe() default false;
 
     interface SdkVersions {
         int _21 = 21;
